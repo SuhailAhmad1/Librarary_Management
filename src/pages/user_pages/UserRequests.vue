@@ -11,6 +11,7 @@
                     <th>S.No</th>
                     <th>Book Name</th>
                     <th>Author</th>
+                    <th>Section</th>
                     <th>No of Days</th>
                     <th>Status</th>
                 </tr>
@@ -20,6 +21,7 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ request.book_name }}</td>
                     <td>{{ request.author }}</td>
+                    <td>{{ request.category }}</td>
                     <td>{{ request.days_requested }}</td>
                     <td :class="status_color(request.status)">{{ request.status }}</td> 
                 </tr>

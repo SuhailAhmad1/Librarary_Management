@@ -1,7 +1,7 @@
 <template>
   <header>
     <nav>
-      <h1><router-link to="/home/manager">Libraray App - Librarian</router-link></h1>
+      <h1><router-link to="/home/manager">Library App - Librarian</router-link></h1>
       <ul>
         <li>
           <router-link to="/manager/statistics">Statistics</router-link>

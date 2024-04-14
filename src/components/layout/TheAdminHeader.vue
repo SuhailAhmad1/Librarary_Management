@@ -1,7 +1,7 @@
 <template>
     <header>
         <nav>
-            <h1><router-link to="/admin/requests">Libraray App - Admin</router-link></h1>
+            <h1><router-link to="/admin/requests">Library App - Admin</router-link></h1>
             <ul>
                 <li>
                     <base-button @click="logout">Logout</base-button>

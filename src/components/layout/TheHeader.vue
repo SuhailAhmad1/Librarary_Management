@@ -1,7 +1,7 @@
 <template>
   <header>
     <nav>
-      <h1><router-link to="/">Libraray App</router-link></h1>
+      <h1><router-link to="/">Library App</router-link></h1>
       <ul>
         <li>
           <router-link to="/my_books">My Books</router-link>

@@ -11,6 +11,7 @@
                     <th>S.No</th>
                     <th>Book Name</th>
                     <th>Author</th>
+                    <th>Section</th>
                     <th>Expirey Date</th>
                     <th>Action</th>
                 </tr>
@@ -20,6 +21,7 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ book.book_name }}</td>
                     <td>{{ book.author }}</td>
+                    <td>{{ book.category }}</td>
                     <td>{{ book.expirey_at }}</td>
                     <td class="actions">
                         <base-button link :to="'/view_book/' + book.book_id">View</base-button>
@@ -37,6 +39,7 @@
                     <th>S.No</th>
                     <th>Book Name</th>
                     <th>Author</th>
+                    <th>Section</th>
                     <th>Expirey Date</th>
                     <th>Status</th>
                 </tr>
@@ -46,6 +49,7 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ book.book_name }}</td>
                     <td>{{ book.author }}</td>
+                    <td>{{ book.category }}</td>
                     <td>{{ book.expirey_at }}</td>
                     <td v-if="book.is_returned" id="return">Returned</td>
                     <td v-else id="expired">Expired</td>
