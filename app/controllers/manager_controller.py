@@ -39,7 +39,8 @@ def add_category():
 
         data = request.get_json()
 
-        if not ("category_name" in data):
+        if not ("category_name" in data and "description" in data):
+            print(data)
             return {"message": 'Missing data in the request'}, 400
         status = manager_service.add_category_db(userId, data)
         if status:
@@ -62,7 +63,7 @@ def edit_category():
 
         data = request.get_json()
 
-        if not ("category_name" in data and "category_id" in data):
+        if not ("category_name" in data and "category_id" in data and "category_description" in data):
             return {"message": 'Missing data in the request'}, 400
         status = manager_service.edit_category_db(userId, data)
         if status:
@@ -109,15 +110,17 @@ def add_product():
         userId = get_jwt_identity()
         if not auth_service.check_if_manager(userId):
             return {"message": "Unauthorized user"}, 403
-        content_type = request.headers.get("Content-Type")
-        if not content_type == "application/json":
-            return {"message": 'Only JSON allowed'}, 400
+        print(request.files)
+        if 'file' not in request.files:
+            return {"message": "Please attach a file"}, 400
+        data = {
+            "book_name" : request.form['name'],
+            "author": request.form["author"],
+            "category_id" : request.form["category_id"]
+        }
+        file = request.files["file"]
 
-        data = request.get_json()
-
-        if not ("name" in data and "rate" in data and "quantity" in data and "category_id" in data):
-            return {"message": 'Missing data in the request'}, 400
-        status = manager_service.add_product_db(userId, data)
+        status = manager_service.add_product_db(userId, data, file)
         if status:
             return {"message": "successfully added the item"}, 200
         return {"message": "something went wrong"}, 500
@@ -138,7 +141,7 @@ def edit_product():
 
         data = request.get_json()
 
-        if not ("product_id" in data and "name" in data and "rate" in data and "quantity" in data):
+        if not ("product_id" in data and "name" in data and "author" in data):
             return {"message": 'Missing data in the request'}, 400
         status = manager_service.edit_product_db(userId, data)
         if status:
@@ -167,12 +170,26 @@ def delete_product(product_id):
 
 
 @jwt_required()
-def get_manager_orders():
+def get_book(product_id):
     try:
         userId = get_jwt_identity()
         if not auth_service.check_if_manager(userId):
             return {"message": "Unauthorized user"}, 403
-        user_orders = manager_service.get_manager_orders_db(userId)
+
+        book_path = manager_service.get_book_path(product_id, userId)
+        return send_file(book_path, as_attachment=True)
+
+    except Exception as e:
+        traceback.print_exc(e)
+        return {"message": "Something went wrong"}, 500
+
+@jwt_required()
+def get_alluser_requets():
+    try:
+        userId = get_jwt_identity()
+        if not auth_service.check_if_manager(userId):
+            return {"message": "Unauthorized user"}, 403
+        user_orders = manager_service.get_man_user_requests_db(userId)
         return {"data": user_orders}, 200
     except Exception as e:
         traceback.print_exc(e)
@@ -180,7 +197,7 @@ def get_manager_orders():
 
 
 @jwt_required()
-def update_order_status():
+def update_user_request_status():
     try:
         userId = get_jwt_identity()
         if not auth_service.check_if_manager(userId):
@@ -191,10 +208,10 @@ def update_order_status():
 
         data = request.get_json()
 
-        if not ("order_id" in data and "status" in data):
+        if not ("request_id" in data and "status" in data):
             return {"message": 'Missing data in the request'}, 400
-        status = manager_service.update_order_status_db(
-            data["order_id"], data["status"])
+        status = manager_service.update_user_req_status_db(
+            data["request_id"], data["status"])
         if status:
             return {"message": "successfully updated the order"}, 200
         return {"message": "something went wrong"}, 500
@@ -250,13 +267,14 @@ def read_gen_task_status(task_id):
         traceback.print_exc(e)
         return {"message": "Something went wrong"}, 500
 
+
 @jwt_required()
 def download_csv():
     try:
         userId = get_jwt_identity()
         if not auth_service.check_if_manager(userId):
             return {"message": "Unauthorized user"}, 403
-        
+
         content_type = request.headers.get("Content-Type")
         if not content_type == "application/json":
             return {"message": 'Only JSON allowed'}, 400
@@ -265,7 +283,7 @@ def download_csv():
 
         if not ("csv_data" in data):
             return {"message": 'Missing data in the request'}, 400
-        
+
         csv_file = manager_service.create_csv(data["csv_data"], userId)
         return send_file(csv_file, as_attachment=True)
 

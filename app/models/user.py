@@ -6,6 +6,7 @@ class User(db.Model):
     username = db.Column(db.String(180))
     email = db.Column(db.String(100))
     password = db.Column(db.String(256))
+    last_login = db.Column(db.DateTime, default=db.sql.func.now())
     role = db.Column(db.String(100))
 
     def __init__(self, email, password):

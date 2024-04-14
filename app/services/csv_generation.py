@@ -1,4 +1,4 @@
-from app.models.product import Product, Category, Order
+from app.models.product import Product, Category, UserRequest
 from app import create_app
 import csv
 import os
@@ -10,16 +10,15 @@ DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
 
 def generateCSV(userId):
     with app.app_context():
-        products = Product.query.filter_by(
-            userid=userId).order_by(Product.id.desc())
+        products = Product.query.filter_by().order_by(Product.id.desc())
         product_info = []
         for pro in products:
             this_pro = {
-                "name": pro.name,
+                "book": pro.name,
+                "author": pro.author,
+                "book_pdf": pro.book_path.split("/")[-1],
                 "category": Category.query.filter_by(id=pro.category_id).first().name,
-                "rate": pro.rate,
-                "quantity": pro.quantity,
-                "orders": Order.query.filter_by(product_id=pro.id).count()
+                "number_of_requests": UserRequest.query.filter_by(product_id=pro.id).count(),
             }
 
             product_info.append(this_pro)

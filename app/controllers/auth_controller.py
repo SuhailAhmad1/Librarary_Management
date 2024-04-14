@@ -67,6 +67,7 @@ def login():
         if user and sha256.verify(data["password"], user["password"]):
             access_token = create_access_token(user["id"])
             refresh_token = create_refresh_token(user['id'])
+            auth_service.update_last_login(user["id"])
             return {
                 "user_id": user["id"],
                 "user_name": user["username"],

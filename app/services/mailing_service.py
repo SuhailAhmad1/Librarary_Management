@@ -22,7 +22,7 @@ def sendEmail(to, subject, message):
         <p style="color: black; font-size: 18px;">{message}</p>
         <br/>
         <p style="color: gray; font-size: 18px;">Best Regards</p>
-        <p style="color: gray; font-size: 18px;">Team Grocery App</p>
+        <p style="color: gray; font-size: 18px;">Team Libraray App</p>
     </body>
     </html>
     """

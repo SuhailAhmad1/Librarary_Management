@@ -1,4 +1,4 @@
-from app.models.product import Product, Category, Order
+from app.models.product import Product, Category, Order, UserRequest
 from app.models.request import CategoryRequest
 from app import db
 import matplotlib.pyplot as plt
@@ -7,7 +7,8 @@ import time
 import json
 import csv
 from app.services.jobs import send_email_task
-
+import pytz
+from datetime import datetime, timedelta
 
 DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
 
@@ -65,6 +66,13 @@ class ManagerService:
         db.session.commit()
         return True
 
+    def convert_datetime(self, date_obj):
+
+        date_obj += timedelta(hours=5, minutes=30)
+        ist_date_str = date_obj.strftime("%I:%M %p - %d %b %Y")
+        return ist_date_str
+
+
     def get_all_products_db(self, userid):
         manager_categories = Category.query.filter_by(
             user_id=userid, is_active=1).order_by(Category.id.desc())
@@ -73,6 +81,8 @@ class ManagerService:
             this_cart = {
                 "cat_id": cat.id,
                 "cat_name": cat.name,
+                "cat_description": cat.description,
+                "created_at": self.convert_datetime(cat.created_at),
                 "products": []
             }
             products = Product.query.filter_by(
@@ -81,18 +91,32 @@ class ManagerService:
                 this_pro = {
                     "id": pro.id,
                     "itemName": pro.name,
-                    "rate": pro.rate,
-                    "quantity": pro.quantity,
+                    "author": pro.author,
+                    "pdf_name": pro.book_path.split("/")[-1],
                 }
                 this_cart["products"].append(this_pro)
             res.append(this_cart)
         return res
 
-    def add_product_db(self, userId, data):
+
+    def upload(self, file, userid):
+        current_time_stamp = str(time.time()).replace('.','')
+        if not os.path.isdir(f"{DOWNLOAD_DIR}{userid}"):
+            os.mkdir(f"{DOWNLOAD_DIR}{userid}")
+        if not os.path.isdir(f"{DOWNLOAD_DIR}{userid}/{current_time_stamp}"):
+            os.mkdir(f"{DOWNLOAD_DIR}{userid}/{current_time_stamp}")
+        filepath = os.path.join(f"{DOWNLOAD_DIR}{userid}/{current_time_stamp}", file.filename)
+
+        file.save(filepath)
+        print(file)
+        return filepath
+    
+    def add_product_db(self, userId, data, file):
+        book_path = self.upload(file, userId)
         new_product = Product(
-            name=data["name"],
-            rate=data["rate"],
-            quantity=data["quantity"],
+            name=data["book_name"],
+            author=data["author"],
+            book_path=book_path,
             userid=userId,
             category_id=data["category_id"],
             is_active=1
@@ -106,8 +130,7 @@ class ManagerService:
             id=data["product_id"], userid=userId).first()
         if product:
             product.name = data["name"]
-            product.rate = data["rate"]
-            product.quantity = data["quantity"]
+            product.author = data["author"]
             db.session.commit()
             return True
         else:
@@ -120,35 +143,39 @@ class ManagerService:
             db.session.commit()
             return True
         return False
+    
+    def get_book_path(self, product_id, userId):
+        product = Product.query.filter_by(id=product_id, userid=userId).first()
+        return product.book_path
 
-    def get_manager_orders_db(self, userId):
-        orders = Order.query.join(Order.product).filter(
-            Product.userid == userId).order_by(Order.id.desc())
+    def get_man_user_requests_db(self, userId):
+        all_reqs = UserRequest.query.order_by(UserRequest.id.desc()).all()
 
         res = []
-        for order in orders:
+        for request in all_reqs:
             this_order = {
-                "id": order.id,
-                "product_name": order.product.name,
-                "amount": order.amount,
-                "address": order.address,
-                "phone_number": order.phone_number,
-                "quantity": order.quantity,
-                "status": order.status,
-                "name": order.full_name
+                "id": request.id,
+                "book_name": request.product.name,
+                "author": request.product.author,
+                "days_requested": request.days_requested,
+                "user": request.user.email,
+                "status": "Approved" if request.status == 1 else "Rejected" if request.status == -1 else "Pending"
             }
             res.append(this_order)
         return res
 
-    def update_order_status_db(self, order_id, new_status):
-        order = Order.query.filter_by(id=order_id).first()
-        if order:
-            order.status = new_status
+    def update_user_req_status_db(self, req_id, new_status):
+        req = UserRequest.query.filter_by(id=req_id).first()
+        if req:
+            req.status = new_status
+            if new_status == 1:
+                req.approved_at = datetime.now()
             db.session.commit()
+            new_status_word = "Approved" if new_status == 1 else "Rejected"
             send_email_task.delay(
-                order.user.email,
-                "Order status update",
-                f"Your orders has been successfully {new_status}. Please check your dashboard for latest status"
+                req.user.email,
+                "Request status update",
+                f"Your request has been {new_status_word}. Please check your dashboard for latest status"
             )
             return True
         return False
@@ -159,9 +186,9 @@ class ManagerService:
         product_name = []
         product_count = []
         for pro in products:
-            order_count = Order.query.filter_by(product_id=pro.id)
+            user_requests = UserRequest.query.filter_by(product_id=pro.id)
             count = 0
-            for c in order_count:
+            for c in user_requests:
                 count += 1
             this_product_name = pro.name
             cat = Category.query.filter_by(id=pro.category_id).first()
@@ -170,9 +197,9 @@ class ManagerService:
             product_count.append(count)
         plt.figure(figsize=(10, 6))
         plt.bar(product_name, product_count, color='skyblue')
-        plt.xlabel('Products')
-        plt.ylabel('Number of orders')
-        plt.title('Products vs Orders')
+        plt.xlabel('Books')
+        plt.ylabel('Number of requests')
+        plt.title('Books vs Number of Requests')
         plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
         plt.tight_layout()
 
@@ -196,7 +223,7 @@ class ManagerService:
         csv_file = DOWNLOAD_DIR+str(userId)+"/product_data.csv"
 
         # Define CSV fieldnames
-        fieldnames = ['name', 'category', 'quantity', 'rate', 'orders']
+        fieldnames = ['book', 'author', 'book_pdf', 'category', 'number_of_requests']
 
         # Write JSON data to CSV file
         with open(csv_file, 'w', newline='') as file:

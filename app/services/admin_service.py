@@ -41,9 +41,10 @@ class AdminService:
                 update_status = "Accepted"
                 operation = category_req.type
                 if operation == "CREATE":
+                    cat_info = json.loads(category_req.request_data)
                     new_category = Category(
-                        name=json.loads(category_req.request_data)[
-                            "category_name"],
+                        name=cat_info["category_name"],
+                        description = cat_info["description"],
                         user_id=category_req.user_id,
                         is_active=1
                     )
@@ -65,6 +66,8 @@ class AdminService:
                     if category:
                         category.name = json.loads(category_req.request_data)[
                             "category_name"]
+                        category.description = json.loads(category_req.request_data)[
+                            "category_description"]
 
                 category_req.status = 1
 
