@@ -159,6 +159,7 @@ class ManagerService:
                 "author": request.product.author,
                 "days_requested": request.days_requested,
                 "user": request.user.email,
+                "category": request.product.category.name,
                 "status": "Approved" if request.status == 1 else "Rejected" if request.status == -1 else "Pending"
             }
             res.append(this_order)

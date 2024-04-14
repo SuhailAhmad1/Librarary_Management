@@ -2,7 +2,8 @@ from celery_app import celery
 import time
 from .mailing_service import sendEmail
 from .csv_generation import generateCSV
-from .scheduled_services import check_expirey, send_notice_if_not_login
+from .scheduled_services import check_expirey, send_notice_if_not_login, \
+    send_reports
 from celery.schedules import crontab
 
 @celery.task
@@ -32,6 +33,10 @@ celery.conf.beat_schedule = {
     },
     'every-evening-night': {
         'task': 'app.services.jobs.check_for_last_login',
+        'schedule': crontab(hour=20, minute=0),
+    },
+    'task-on-first-of-month': {
+        'task': 'app.services.jobs.send_monthly_reports',
         'schedule': crontab(),
     }
 }
@@ -50,6 +55,15 @@ def check_for_last_login():
     print("Checking for user for last login...")
     if send_notice_if_not_login():
         print('Successfully sent notification to inacitve users')
+        return True
+    print('Something went wrong..')
+    return False
+
+@celery.task
+def send_monthly_reports():
+    print("Sending user reports...")
+    if send_reports():
+        print('Successfully sent monthly report to all users')
         return True
     print('Something went wrong..')
     return False

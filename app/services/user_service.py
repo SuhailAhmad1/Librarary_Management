@@ -58,6 +58,7 @@ class UserService:
             if product:
                 this_item["book_name"] = product.name
                 this_item["author"] = product.author
+                this_item["category"] = product.category.name
                 res.append(this_item)
         return res
 
@@ -81,6 +82,7 @@ class UserService:
                 "author": book.product.author,
                 "days_requested": book.days_requested,
                 "is_returned": book.is_returned,
+                "category": book.product.category.name,
                 "expirey_at": self.calculate_expirey(book.approved_at, book.days_requested)
             }
             if not (book.is_returned or book.is_expired):
