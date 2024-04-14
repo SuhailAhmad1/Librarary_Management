@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import ItemList from "./pages/user_pages/items/ItemList.vue"
-import AddCart from "./pages/user_pages/cart/AddCart.vue"
-import CartList from "./pages/user_pages/cart/CartList.vue"
-import EditCart from "./pages/user_pages/cart/EditCart.vue"
-import PlaceOrder from "./pages/user_pages/order/PlaceOrder.vue"
-import UserOrders from "./pages/user_pages/order/UserOrders.vue"
+import ItemList from "./pages/user_pages/ItemList.vue"
+import AddRequest from "./pages/user_pages/AddRequest.vue"
+import UserBooks from "./pages/user_pages/UserBooks.vue"
+import UserRequests from "./pages/user_pages/UserRequests.vue"
+import UserViewBook from "./pages/user_pages/UserViewBook.vue"
 import NotFound from './pages/NotFound.vue';
 import Test from './pages/Test.vue'
 import ManagerItem from "./pages/manager_pages/ManagerItem.vue"
@@ -13,10 +12,11 @@ import EditItem from "./pages/manager_pages/EditItem.vue"
 import AddItem from './pages/manager_pages/AddItem.vue'
 import AddCategory from "./pages/manager_pages/AddCategory.vue"
 import EditCategory from './pages/manager_pages/EditCategory.vue'
-import ManagerOrders from './pages/manager_pages/ManagerOrders.vue'
+import ManUserRequests from './pages/manager_pages/ManUserRequests.vue'
 import ManagerStatistics from './pages/manager_pages/ManagerStatistics.vue'
 import ManagerRequests from './pages/manager_pages/ManagerRequests.vue'
 import AdminRequests from './pages/admin_pages/AdminRequests.vue'
+import ViewBook from './pages/manager_pages/ViewBook.vue'
 import UserAuth from "./pages/auth/UserAuth.vue"
 import store from './store/index.js'
 
@@ -44,31 +44,25 @@ const router = createRouter({
             meta: { requiresAuth: true }
         },
         {
-            path: '/items/:cat_id/add_to_cart/:id',
-            component: AddCart,
+            path: '/books/:cat_id/add_to_request/:id',
+            component: AddRequest,
             props: true,
             meta: { requiresAuth: true },
         },
         {
-            path: '/cart',
-            component: CartList,
+            path: '/my_books',
+            component: UserBooks,
             meta: { requiresAuth: true }
         },
         {
-            path: '/cart/:id/edit',
-            component: EditCart,
+            path: '/requests',
+            component: UserRequests,
             props: true,
             meta: { requiresAuth: true }
         },
         {
-            path: '/place_order',
-            component: PlaceOrder,
-            props: true,
-            meta: { requiresAuth: true }
-        },
-        {
-            path: '/orders',
-            component: UserOrders,
+            path: '/view_book/:id',
+            component: UserViewBook,
             props: true,
             meta: { requiresAuth: true }
         },
@@ -104,8 +98,14 @@ const router = createRouter({
             meta: { requiresAuth: true }
         },
         {
-            path: '/manager/orders',
-            component: ManagerOrders,
+            path: '/manager/:id/view_book',
+            component: ViewBook,
+            props: true,
+            meta: { requiresAuth: true }
+        },
+        {
+            path: '/manager/user_requests',
+            component: ManUserRequests,
             meta: { requiresAuth: true }
         },
         {

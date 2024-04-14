@@ -6,7 +6,9 @@ export default{
     namespaced: true,
     state(){
         return {
-            cart_items: []
+            cart_items: [],
+            my_books: [],
+            bookUrl: ""
         }
     },
     mutations,

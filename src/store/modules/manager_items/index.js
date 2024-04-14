@@ -10,6 +10,7 @@ export default({
             manager_items: [],
             manager_orders: [],
             graphUrl: "",
+            bookUrl: "",
             manager_requests: {}
         }
     },

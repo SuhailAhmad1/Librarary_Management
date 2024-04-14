@@ -13,6 +13,10 @@
                 <label for="item_name">Category Name</label>
                 <input type="text" id="item_name" v-model="cat_name">
             </div>
+            <div class="form-control">
+                <label for="item_description">Discription</label>
+                <textarea id="item_description" rows="5" v-model="cat_description"></textarea>
+            </div>
             <p class="errors" v-if="!formIsValid">Please enter valid data.</p>
             <div class="actions">
                 <base-button>Update Category</base-button>
@@ -32,7 +36,8 @@ export default {
     data() {
         return {
             isLoading: false,
-            cat_name: null,
+            cat_name: "",
+            cat_description: "",
             formIsValid: true,
             error: null
         }
@@ -52,7 +57,8 @@ export default {
             try {
                 await this.$store.dispatch('manager_items/editCategory', {
                     category_name: this.cat_name,
-                    category_id: this.cat_id
+                    category_id: this.cat_id,
+                    category_description: this.cat_description
                 })
             } catch (err) {
                 this.isLoading = false;
@@ -68,6 +74,7 @@ export default {
             const cat = all_cat.find(cat => cat.cat_id == this.cat_id)
             if (cat) {
                 this.cat_name = cat.cat_name;
+                this.cat_description = cat.cat_description
                 return true;
             }
             return false

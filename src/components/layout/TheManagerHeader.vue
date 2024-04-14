@@ -1,16 +1,16 @@
 <template>
   <header>
     <nav>
-      <h1><router-link to="/home/manager">Grocery App - Manager</router-link></h1>
+      <h1><router-link to="/home/manager">Libraray App - Librarian</router-link></h1>
       <ul>
         <li>
           <router-link to="/manager/statistics">Statistics</router-link>
         </li>
         <li>
-          <router-link to="/manager/requests">My requests</router-link>
+          <router-link to="/manager/requests">My Requests</router-link>
         </li>
         <li>
-          <router-link to="/manager/orders">Orders</router-link>
+          <router-link to="/manager/user_requests">User Requests</router-link>
         </li>
         <li>
           <base-button @click="logout">Logout</base-button>

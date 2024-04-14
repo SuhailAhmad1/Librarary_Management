@@ -4,8 +4,8 @@
   </base-dialog>
   <li>
     <h3>{{ itemName }}</h3>
-    <h5>Rate : Rs. {{ rate }}</h5>
-    <h5>Quantity Available : {{ quantity }}</h5>
+    <h5>Author : {{ author }}</h5>
+    <h5>Pdf : <router-link :to="router_link_view" id="book-link">{{ pdf_name }}</router-link></h5>
     <div class="actions">
       <base-button link :to="editItem">Edit</base-button>
       <base-button mode="red" @click="deleteItem()">Delete</base-button>
@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  props: ["id", "itemName", "rate", "quantity", "cat_id"],
+  props: ["id", "itemName", "author", "pdf_name", "cat_id"],
   data() {
     return {
       error: null
@@ -36,6 +36,9 @@ export default {
     }
   },
   computed: {
+    router_link_view(){
+      return "/manager/"+this.id+"/view_book"
+    },
     editItem() {
       return "/manager/" + this.cat_id + "/edit/"+ this.id;
     }
@@ -44,6 +47,12 @@ export default {
 </script>
 
 <style scoped>
+#book-link{
+  color: rgb(105, 212, 226);
+  text-decoration: none;
+  
+}
+
 li {
   margin: 1rem 0;
   border: 1px solid #424242;

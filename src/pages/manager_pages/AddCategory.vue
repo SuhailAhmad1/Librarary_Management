@@ -13,6 +13,10 @@
                 <label for="item_name">Category Name</label>
                 <input type="text" id="item_name" v-model="cat_name">
             </div>
+            <div class="form-control">
+                <label for="item_description">Discription</label>
+                <textarea id="item_description" rows="5" v-model="cat_description"></textarea>
+            </div>
             <p class="errors" v-if="!formIsValid">Please enter valid data.</p>
             <div class="actions">
                 <base-button>Add Category</base-button>
@@ -32,7 +36,8 @@ export default {
     data() {
         return {
             isLoading: false,
-            cat_name: null,
+            cat_name: "",
+            cat_description: "",
             formIsValid: true,
             error: null
         }
@@ -43,7 +48,7 @@ export default {
         },
         async submitForm() {
             this.formIsValid = true;
-            if (this.cat_name.length === 0) {
+            if (this.cat_name.length === 0 || this.cat_description.length > 30) {
                 console.log("error...")
                 this.formIsValid = false;
                 return;
@@ -51,7 +56,8 @@ export default {
             this.isLoading = true;
             try {
                 await this.$store.dispatch('manager_items/addCategory', {
-                    category: this.cat_name
+                    category_name: this.cat_name,
+                    description: this.cat_description
                 })
             } catch (err) {
                 this.isLoading = false;

@@ -88,7 +88,7 @@ export default {
           });
           const role = this.$store.getters['getUserRole']
           let redirectUrl;
-          if (role == "manager") {
+          if (role == "librarian") {
             redirectUrl = "/" + (this.$route.query.redirect || 'home/manager');
           }
           else if (role == "user") {

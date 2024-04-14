@@ -24,8 +24,8 @@
         </div>
 
         <ul v-else-if="allManagerItems.length">
-            <category-item v-for="cat in allManagerItems" :key="cat.id" :id="cat.cat_id" :cat_name="cat.cat_name"
-                :products="cat.products"></category-item>
+            <category-item v-for="cat in allManagerItems" :key="cat.id" :id="cat.cat_id" :cat_name="cat.cat_name" 
+                :cat_description="cat.cat_description" :created_at="cat.created_at" :products="cat.products"></category-item>
         </ul>
         <h2 v-else>No items Found</h2>
     </section>
@@ -196,6 +196,7 @@ input {
     height: 95%;
     margin-right: 30px;
     border-radius: 10px;
+    border: 0;
 }
 
 section {

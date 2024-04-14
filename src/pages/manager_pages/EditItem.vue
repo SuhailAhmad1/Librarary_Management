@@ -7,19 +7,15 @@
         <base-dialog :show="isLoading" fixed title="Updating...">
             <base-spinner></base-spinner>
         </base-dialog>
-        <h3>Edit Item</h3>
+        <h3>Edit Book Details</h3>
         <form @submit.prevent="submitForm">
             <div class="form-control">
-                <label for="item_name">Item name</label>
+                <label for="item_name">Book Name</label>
                 <input type="text" id="item_name" v-model="item_name">
             </div>
             <div class="form-control">
-                <label for="item_rate">Item rate (Rs.)</label>
-                <input type="number" id="item_quantity" v-model="item_rate">
-            </div>
-            <div class="form-control">
-                <label for="item_quantity">Quanitity</label>
-                <input type="number" id="item_quantity" v-model.number="item_quantity">
+                <label for="item_rate">Author</label>
+                <input type="text" id="item_quantity" v-model="item_author">
             </div>
             <p class="errors" v-if="!formIsValid">Please enter valid data.</p>
             <div class="actions">
@@ -41,8 +37,7 @@ export default {
             isLoading: false,
             item_id: null,
             item_name: null,
-            item_rate: null,
-            item_quantity: null,
+            item_author: null,
             formIsValid: true,
             error: null
         }
@@ -63,8 +58,7 @@ export default {
                 await this.$store.dispatch('manager_items/editItem', {
                     id: this.item_id,
                     itemName: this.item_name,
-                    quantity: this.item_quantity,
-                    rate: this.item_rate,
+                    author: this.item_author,
                 })
             } catch (err) {
                 this.isLoading = false;
@@ -82,8 +76,7 @@ export default {
             if (item) {
                 this.item_id = this.id;
                 this.item_name = item.itemName;
-                this.item_rate = item.rate;
-                this.item_quantity = item.quantity;
+                this.item_author = item.author;
                 return true;
             }
             return false

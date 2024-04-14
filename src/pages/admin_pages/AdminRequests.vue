@@ -4,7 +4,7 @@
         <p>{{ error }}</p>
     </base-dialog>
     <section>
-        <h3>All Manager Requests</h3>
+        <h3>Librarian Requests</h3>
         <table>
             <thead>
                 <tr>

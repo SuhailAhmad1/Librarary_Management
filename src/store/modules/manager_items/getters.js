@@ -6,11 +6,14 @@ export default({
     hasItem(state){
         return state.manager_items.length !== 0;
     },
-    managerOrders(state){
-        return state.manager_orders
+    userRequests(state){
+        return state.user_requests
     },
     managerGraph(state){
         return state.graphUrl
+    },
+    managerBook(state){
+        return state.bookUrl
     },
     managerRequests(state){
         return state.manager_requests;

@@ -7,9 +7,7 @@ export default ({
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                "category_name": payload.category
-            })
+            body: JSON.stringify(payload)
         })
 
         const responseData = await response.json();
@@ -29,7 +27,8 @@ export default ({
             },
             body: JSON.stringify({
                 category_name: payload.category_name,
-                category_id: payload.category_id
+                category_id: payload.category_id,
+                category_description: payload.category_description
             })
         })
 
@@ -102,8 +101,7 @@ export default ({
             },
             body: JSON.stringify({
                 "name": payload.itemName,
-                "rate": payload.rate,
-                "quantity": payload.quantity,
+                "author": payload.author,
                 "product_id": payload.id
             })
         })
@@ -116,19 +114,18 @@ export default ({
     },
 
     async addItem(context, payload) {
+        const formData = new FormData();
+        formData.append('file', payload.file);
+        formData.append('name', payload.itemName);
+        formData.append('author', payload.author);
+        formData.append('category_id', payload.category_id)
+
         const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/manager/add_product", {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Authorization': `Bearer ${localStorage.getItem("token")}`
             },
-            body: JSON.stringify({
-                "name": payload.itemName,
-                "rate": payload.rate,
-                "quantity": payload.quantity,
-                "category_id": payload.category_id
-            })
+            body: formData
         })
 
         const responseData = await response.json();
@@ -170,8 +167,8 @@ export default ({
         })
     },
 
-    async setOrderItems(context) {
-        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/manager/get_manager_orders", {
+    async setUserRequestItems(context) {
+        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/manager/get_alluser_requets", {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`
@@ -183,11 +180,11 @@ export default ({
             const error = new Error(responseData.message || 'Failed to set order Items.')
             throw error;
         }
-        context.commit('addToManagerOrders', responseData.data)
+        context.commit('addUserRequests', responseData.data)
     },
 
-    async updateOrderStatus(context, payload) {
-        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/manager/update_order_status", {
+    async updateRequestStatus(context, payload) {
+        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/manager/update_user_request_status", {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -219,6 +216,28 @@ export default ({
         const responseData = await response.blob();
 
         context.commit('addGraph', URL.createObjectURL(responseData))
+    },
+
+    async setBookPdf(context, payload) {
+        const response = await fetch(`${process.env.VUE_APP_BACKEND_URL}/api/manager/get_book/${payload.id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`
+            }
+        })
+
+        if (!response.ok) {
+            const error = 'Failed to get Items.'
+            this.error = error
+        }
+
+        const responseData = await response.blob();
+
+        context.commit('addBook', URL.createObjectURL(responseData))
+    },
+
+    unsetBookPdf(context){
+        context.commit("addBook", "")
     },
 
     async setRequestItems(context) {

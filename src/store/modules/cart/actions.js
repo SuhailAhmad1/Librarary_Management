@@ -1,6 +1,6 @@
 export default {
-    async addToCart(context, payload){
-        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/add_to_cart", {
+    async addToRequest(context, payload) {
+        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/add_to_requests", {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -11,75 +11,76 @@ export default {
         })
         const responseData = await response.json();
         if (!response.ok) {
-            const error = new Error(responseData.message || 'Failed to Add items in a Cart.')
+            const error = new Error(responseData.message || 'Failed to Add items in requests.')
             throw error;
         }
     },
 
-    async setCartItems(context,payload){
-        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/get_all_cart_items", {
+    async setRequestItems(context) {
+        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/get_all_user_requests", {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify(payload)
+            }
         })
-        
+
         const responseData = await response.json();
         if (!response.ok) {
             const error = new Error(responseData.message || 'Failed to get Cart Items.')
             throw error;
         }
-        context.commit('addToCart', responseData.data)
+        context.commit('addRequests', responseData.data)
     },
 
-    async editCartItem(context, payload){
-        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/edit_cart_item", {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "cart_id": payload.cart_id,
-                "quantity": payload.quantity,
-                "amount": payload.amount
-            })
-        })
-
-        const responseData = await response.json();
-        if (!response.ok) {
-            const error = new Error(responseData.message || 'Failed to edit Items.')
-            throw error;
-        }
-    },
-    async deleteItem(context, payload) {
-        const response = await fetch(`${process.env.VUE_APP_BACKEND_URL}/api/user/delete_cart_item/${payload.id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem("token")}`,
-            }
-        })
-
-        const responseData = await response.json();
-        if (!response.ok) {
-            const error = new Error(responseData.message || 'Failed to delete Item.')
-            throw error;
-        }
-        
-        const response1 = await fetch(`${process.env.VUE_APP_BACKEND_URL}/api/user/get_all_cart_items`, {
+    async setMyBooks(context) {
+        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/get_my_books", {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`
             }
         })
 
-        const responseData1 = await response1.json();
+        const responseData = await response.json();
         if (!response.ok) {
-            const error = new Error(responseData1.message || 'Failed to get Items.')
+            const error = new Error(responseData.message || 'Failed to get Cart Items.')
             throw error;
         }
-        context.commit('addToCart', responseData1.data)
+        context.commit('addBooks', responseData.data)
+    },
+
+    async setBookPdf(context, payload) {
+        const response = await fetch(`${process.env.VUE_APP_BACKEND_URL}/api/user/get_book/${payload.id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`
+            }
+        })
+
+        if (!response.ok) {
+            const error = 'Failed to get Items.'
+            this.error = error
+        }
+
+        const responseData = await response.blob();
+
+        context.commit('addBook', URL.createObjectURL(responseData))
+    },
+
+    async returnBook(context, payload) {
+        const response = await fetch(process.env.VUE_APP_BACKEND_URL + "/api/user/return_book/"+payload.request_id, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+
+        const responseData = await response.json();
+        if (!response.ok) {
+            const error = new Error(responseData.message || 'Failed to update order status.')
+            throw error;
+        }
     }
 };

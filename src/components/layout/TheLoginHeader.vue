@@ -1,7 +1,7 @@
 <template>
     <header>
       <nav>
-        <h1><router-link to="/">Grocery App</router-link></h1>
+        <h1><router-link to="/">Libraray App</router-link></h1>
       </nav>
     </header>
   </template>

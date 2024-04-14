@@ -7,19 +7,19 @@
         <base-dialog :show="isLoading" fixed title="Adding...">
             <base-spinner></base-spinner>
         </base-dialog>
-        <h3>Add Item</h3>
+        <h3>Add Book</h3>
         <form @submit.prevent="submitForm">
             <div class="form-control">
-                <label for="item_name">Item name</label>
+                <label for="item_name">Title</label>
                 <input type="text" id="item_name" v-model="item_name">
             </div>
             <div class="form-control">
-                <label for="item_rate">Item rate (Rs.)</label>
-                <input type="number" id="item_quantity" v-model="item_rate">
+                <label for="item_author">Author </label>
+                <input type="text" id="item_author" v-model="item_author">
             </div>
             <div class="form-control">
-                <label for="item_quantity">Quanitity</label>
-                <input type="number" id="item_quantity" v-model.number="item_quantity">
+                <label for="item_quantity">Upload Book</label>
+                <input type="file" @change="handleFileUpload">
             </div>
             <p class="errors" v-if="!formIsValid">Please enter valid data.</p>
             <div class="actions">
@@ -40,21 +40,43 @@ export default {
     data() {
         return {
             isLoading: false,
-            item_name: null,
-            item_rate: null,
-            item_quantity: null,
+            item_name: "",
+            item_author: "",
+            selectedFile: null,
             formIsValid: true,
             error: null
         }
     },
     methods: {
+        handleFileUpload(event) {
+            const files = event.target.files;
+            if (files.length > 1) {
+                // More than one file selected
+                alert('Please select only one file.');
+                event.target.value = ''; // Reset the file input
+                return;
+            }
+            const file = files[0];
+            if (!file) {
+                // No file selected
+                return;
+            }
+            // Check if the selected file is a PDF
+            if (file.type === 'application/pdf') {
+                this.selectedFile = file;
+            } else {
+                alert('Please select a PDF file.');
+                event.target.value = ''; // Reset the file input
+            }
+
+        },
         closeError() {
             this.error = null;
         },
         async submitForm() {
-            console.log(this.id)
+            console.log(this.selectedFile)
             this.formIsValid = true;
-            if (this.item_quantity === 0 || this.item_name === '' || this.item_rate <= 0) {
+            if (this.item_author === 0 || this.item_name === '' || this.selectedFile === null) {
                 console.log("error...")
                 this.formIsValid = false;
                 return;
@@ -63,8 +85,8 @@ export default {
             try {
                 await this.$store.dispatch('manager_items/addItem', {
                     itemName: this.item_name,
-                    quantity: this.item_quantity,
-                    rate: this.item_rate,
+                    author: this.item_author,
+                    file: this.selectedFile,
                     category_id: this.id
                 })
             } catch (err) {

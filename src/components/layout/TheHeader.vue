@@ -1,13 +1,13 @@
 <template>
   <header>
     <nav>
-      <h1><router-link to="/">Grocery App</router-link></h1>
+      <h1><router-link to="/">Libraray App</router-link></h1>
       <ul>
         <li>
-          <router-link to="/cart">Cart</router-link>
+          <router-link to="/my_books">My Books</router-link>
         </li>
         <li>
-          <router-link to="/orders">Orders</router-link>
+          <router-link to="/requests">My Requests</router-link>
         </li>
         <li>
           <base-button @click="logout">Logout</base-button>

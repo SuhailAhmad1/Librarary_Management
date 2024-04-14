@@ -4,15 +4,14 @@
     </base-dialog>
     <li>
         <div id="cat_header">
-            <h3>{{ cat_name }}</h3>
-            <p>Seller : {{ seller }}</p>
+            <h3>Section : {{ cat_name }}</h3>
         </div>
         <div class="scroll-container" v-if="!!products.length">
             <button class="scroll-button" @click="scrollLeft">&lt;</button>
             <div class="scroll-wrapper" ref="scrollWrapper">
                 <div class="scroll-content">
                     <grocery-item v-for="item in products" :key="item.id" :id="item.id" :itemName="item.itemName"
-                        :rate="item.rate" :quantity="item.quantity" :cat_id="id" class="item"></grocery-item>
+                        :author="item.author" :quantity="item.quantity" :cat_id="id" class="item"></grocery-item>
                 </div>
             </div>
             <button class="scroll-button" @click="scrollRight">&gt;</button>

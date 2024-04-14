@@ -4,18 +4,16 @@
   </base-dialog>
   <li>
     <h3>{{ itemName }}</h3>
-    <h5>Rate : Rs. {{ rate }}</h5>
-    <h5>Quantity Available : {{ quantity }}</h5>
+    <h5>Author : {{ author }}</h5>
     <div class="actions">
-      <button id="out_of_stock" v-if="outOfStock">Out of stock</button>
-      <base-button v-else link :to="addToCart">Buy</base-button>
+      <base-button link :to="requestAccess">Request</base-button>
     </div>
   </li>
 </template>
 
 <script>
 export default {
-  props: ["id", "itemName", "rate", "quantity", "cat_id"],
+  props: ["id", "itemName", "author", "quantity", "cat_id"],
   data() {
     return {
       error: null
@@ -27,11 +25,8 @@ export default {
     },
   },
   computed: {
-    outOfStock(){
-      return this.quantity == 0;
-    },
-    addToCart() {
-      return "/items/" + this.cat_id + "/add_to_cart/" + this.id;
+    requestAccess() {
+      return "/books/" + this.cat_id + "/add_to_request/" + this.id;
     }
   }
 }
@@ -47,17 +42,6 @@ li {
   background-color: rgba(25, 29, 29, 0.7);
   list-style: none;
   margin: 14px;
-}
-#out_of_stock{
-  /* width:100rem; */
-  color: white;
-  background-color: rgb(182, 0, 0);
-  /* border-radius: 10px; */
-  border: 1px solid  rgb(182, 0, 0);
-  border-radius: 13px;
-  margin-right: 5px;
-  height: 40px;
-
 }
 h3 {
   font-size: 1.3rem;

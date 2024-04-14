@@ -3,15 +3,23 @@
         <p>{{ error }}</p>
     </base-dialog>
     <li>
-        <div id="cat_header">
+        <div class="cat_header">
             <h3>{{ cat_name }}</h3>
             <div>
                 <base-badge v-for="cat in category" :key="cat" :type="cat" :title="cat"></base-badge>
             </div>
             <div class="actions">
-                <base-button mode="outline" link :to="addItem">+ Add Product</base-button>
+                <base-button mode="outline" link :to="addItem">+ Add Book</base-button>
                 <base-button link :to="editItem">Edit</base-button>
                 <base-button mode="red" @click="deleteItem()">Delete</base-button>
+            </div>
+        </div>
+        <div class="cat_header">
+            <div id="desciption">
+                <h5>Description :</h5> {{ cat_description }}
+            </div>
+            <div id="date">
+                <h5>Created_at :</h5> {{ created_at }}
             </div>
         </div>
         <div class="scroll-container" v-if="!!products.length">
@@ -19,12 +27,12 @@
             <div class="scroll-wrapper" ref="scrollWrapper">
                 <div class="scroll-content">
                     <manager-item v-for="item in products" :key="item.id" :id="item.id" :itemName="item.itemName"
-                        :rate="item.rate" :quantity="item.quantity" :cat_id="id" class="item"></manager-item>
+                        :author="item.author" :pdf_name="item.pdf_name" :cat_id="id" class="item"></manager-item>
                 </div>
             </div>
             <button class="scroll-button" @click="scrollRight">&gt;</button>
         </div>
-        <p v-else>No product created. Please create one</p>
+        <p v-else><br>No Book uploaded yet. Please upload one</p>
     </li>
 </template>
 
@@ -35,7 +43,7 @@ export default {
     components: {
         ManagerItem
     },
-    props: ["id", "cat_name", "products"],
+    props: ["id", "cat_name", "cat_description", "created_at", "products"],
     data() {
         return {
             error: null,
@@ -71,15 +79,22 @@ export default {
             return "/manager/" + this.id + "/edit_category";
         },
         addItem() {
-            return "/manager/"+ this.id +"/addItem";
+            return "/manager/" + this.id + "/addItem";
         }
     }
 }
 </script>
 
 <style scoped>
-p{
+#desciption {
+    max-width: 70%;
+}
+
+p {
     text-align: center;
+}
+#date{
+    margin-right: 20px;
 }
 li {
     margin: 1rem 0;
@@ -95,6 +110,12 @@ h3 {
     font-size: 1.8rem;
     margin-left: 10px;
 }
+
+h5 {
+    display: inline;
+    font-size: 1.2rem;
+}
+
 h3,
 h4 {
     margin: 0.5rem 0;
@@ -104,7 +125,7 @@ div {
     margin: 0.5rem 0;
 }
 
-#cat_header {
+.cat_header {
     display: flex;
     justify-content: space-between;
 }
