@@ -37,7 +37,7 @@ celery.conf.beat_schedule = {
     },
     'task-on-first-of-month': {
         'task': 'app.services.jobs.send_monthly_reports',
-        'schedule': crontab(),
+        'schedule': crontab(day_of_month=1, hour=0, minute=0),
     }
 }
 # Define the task to be executed periodically
